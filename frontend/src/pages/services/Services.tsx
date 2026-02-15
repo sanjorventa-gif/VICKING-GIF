@@ -17,7 +17,7 @@ import {
     Spinner,
     Flex,
 } from '@chakra-ui/react';
-import { FaTools, FaShieldAlt, FaQuestionCircle } from 'react-icons/fa';
+import { FaTools, FaQuestionCircle } from 'react-icons/fa';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFaqs, type Faq } from '../../api/faqs';
 
