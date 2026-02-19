@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./BACKEND
+    container_name: vicking_backend
+    volumes:
+      - ./BACKEND/sql_app.db:/app/sql_app.db
+      - ./BACKEND/webinvita.db:/app/webinvita.db
+      # If you store uploaded images
+      - ./IMAGENES:/app/IMAGENES
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./webinvita.db
+      - SQLALCHEMY_DATABASE_URI=sqlite:///./webinvita.db
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=/api/v1
+    container_name: vicking_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
