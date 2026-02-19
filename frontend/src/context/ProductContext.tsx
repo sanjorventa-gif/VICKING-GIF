@@ -24,9 +24,9 @@ export function ProductProvider({ children }: { children: ReactNode }) {
             setProducts(data);
         } catch (error) {
             console.error('Failed to fetch products:', error);
-            // Fallback to local data if API fails (for demo purposes)
-            console.log('Falling back to local data');
-            setProducts(initialProducts);
+            // No fallback to local data, as requested
+            alert('Error al conectar con el servidor. Verifique su conexión o intente más tarde.');
+            setProducts([]);
         } finally {
             setIsLoading(false);
         }
