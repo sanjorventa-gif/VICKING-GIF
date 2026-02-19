@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Product } from '../data/products';
 import { getProducts, createProduct, deleteProduct, reorderProducts as reorderProductsApi, updateProduct as apiUpdateProduct } from '../api/products';
-import { products as initialProducts } from '../data/products';
+
 
 interface ProductContextType {
     products: Product[];
