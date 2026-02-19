@@ -14,11 +14,7 @@ class Settings(BaseSettings):
     RECAPTCHA_SECRET_KEY: str
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
-        "http://localhost:3000",
-        "http://localhost:5173", 
-        "https://sanjor-website.onrender.com"
-    ]
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: str | List[str]) -> List[str] | str:
@@ -36,7 +32,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
 
     # Uploads
-    BACKEND_URL: str = "http://localhost:8000"
+    BACKEND_URL: str
 
     # Email
     SMTP_HOST: str = "mail.vicking.com.ar" # Cyberpanel Host

@@ -54,15 +54,17 @@ def create_service_request(
         "request_id": db_obj.id
     }
 
-    # Send Notification to Admin
-    background_tasks.add_task(
-        send_email,
-        email_to=settings.EMAIL_TO_ADMIN,
-        subject=f"Nueva Solicitud de Servicio - {db_obj.company} ({db_obj.name} {db_obj.last_name})",
-        template_name="email/service_notification.html",
-        environment=email_data,
-        reply_to=db_obj.email
-    )
+    # Send Notification to Admin and Support
+    recipients = [settings.EMAIL_TO_ADMIN, "soporte@vicking.com.ar"]
+    for recipient in recipients:
+        background_tasks.add_task(
+            send_email,
+            email_to=recipient,
+            subject=f"Nueva Solicitud de Servicio - {db_obj.company} ({db_obj.name} {db_obj.last_name})",
+            template_name="email/service_notification.html",
+            environment=email_data,
+            reply_to=db_obj.email
+        )
 
     # Send Confirmation to User
     background_tasks.add_task(

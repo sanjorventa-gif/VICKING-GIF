@@ -14,8 +14,7 @@ import {
     AccordionPanel,
     AccordionIcon,
 } from '@chakra-ui/react';
-import { FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
+import { FaInstagram } from 'react-icons/fa';
 import { Link as RouterLink } from 'react-router-dom';
 
 const SocialButton = ({
@@ -181,17 +180,8 @@ export default function Footer() {
                 >
                     <Text textAlign={{ base: 'center', md: 'left' }}>© {new Date().getFullYear()} VICKING (Soporte por Sanjor). Todos los derechos reservados.</Text>
                     <Stack direction={'row'} spacing={6}>
-                        <SocialButton label={'Facebook'} href={'https://www.facebook.com/sanjorenlared'}>
-                            <FaFacebook />
-                        </SocialButton>
                         <SocialButton label={'Instagram'} href={'https://www.instagram.com/sanjorenlared/'}>
                             <FaInstagram />
-                        </SocialButton>
-                        <SocialButton label={'YouTube'} href={'https://www.youtube.com/@sanjorenlared'}>
-                            <FaYoutube />
-                        </SocialButton>
-                        <SocialButton label={'X'} href={'https://x.com/sanjorenlared'}>
-                            <FaXTwitter />
                         </SocialButton>
                     </Stack>
                 </Container>

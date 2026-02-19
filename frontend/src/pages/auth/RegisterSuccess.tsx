@@ -9,12 +9,13 @@ import {
     Stack,
     useColorModeValue,
     VStack,
+    Flex,
 } from '@chakra-ui/react';
 import { FaCheckCircle, FaFileDownload, FaHeadset, FaShieldAlt } from 'react-icons/fa';
 import { Link as RouterLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const MotionBox = motion.create(Box);
+const MotionBox = motion(Box);
 
 const Feature = ({ title, text, icon }: { title: string; text: string; icon: any }) => {
     return (
@@ -45,7 +46,7 @@ const Feature = ({ title, text, icon }: { title: string; text: string; icon: any
         </Stack>
     );
 };
-import { Flex } from '@chakra-ui/react';
+
 
 export default function RegisterSuccess() {
     return (
@@ -81,7 +82,7 @@ export default function RegisterSuccess() {
                         <Icon as={FaCheckCircle} w={24} h={24} color={'green.400'} />
                     </MotionBox>
                     <Heading as="h1" size="2xl" bgGradient="linear(to-r, brand.400, brand.600)" bgClip="text">
-                        ¡Bienvenido a la Familia SAN JOR!
+                        ¡Bienvenido a la Familia VICKING!
                     </Heading>
                     <Text fontSize={'xl'} color={'gray.500'} maxW="2xl">
                         Su cuenta ha sido creada exitosamente. Ahora tiene acceso completo a todos nuestros servicios digitales pensados para maximizar su experiencia.

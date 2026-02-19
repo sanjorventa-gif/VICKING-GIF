@@ -1,12 +1,19 @@
 {% extends "email/base.html" %}
 
 {% block content %}
-<h2>Mensaje Recibido</h2>
+<h2>Hemos recibido su mensaje</h2>
 <p>Estimado/a {{ name }},</p>
-<p>Gracias por contactarse con VICKING. Hemos recibido su mensaje correctamente y le responderemos a la brevedad.</p>
+<p>Muchas gracias por ponerse en contacto con <strong>VICKING</strong>.</p>
+<p>Hemos recibido su consulta correctamente. Nuestro equipo la revisará y se pondrá en contacto con usted a la brevedad
+    posible para brindarle la asistencia que necesita.</p>
 
-<h3>Su mensaje:</h3>
-<p><em>{{ message }}</em></p>
+<div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #007bff; margin: 20px 0;">
+    <strong>Su mensaje:</strong><br>
+    <em>{{ message }}</em>
+</div>
 
-<p>Saludos cordiales,<br>El equipo de VICKING</p>
+<p>Mientras tanto, le invitamos a visitar nuestra sección de <a
+        href="https://vicking.com.ar/preguntas-frecuentes">Preguntas Frecuentes</a>.</p>
+
+<p>Atentamente,<br>El equipo de VICKING</p>
 {% endblock %}

@@ -20,6 +20,8 @@ async def run_google_integration(invitation_id: int):
     async with SessionLocal() as db:
         await google_service.create_pro_google_pack(db, invitation_id)
 
+from app.core.config import settings
+
 @router.post("", response_model=InvitationDTO, status_code=status.HTTP_201_CREATED)
 async def create_invitation(
     data: InvitationCreate,
@@ -30,11 +32,11 @@ async def create_invitation(
     Create a new invitation (Demo by default).
     Triggers Google Form creation if features are enabled.
     """
-    # Sanitize content to fix localhost URLs from previous frontend state
+    # Sanitize content to fix potential bad URLs
     def sanitize_urls(obj):
         if isinstance(obj, str):
-            # Replace localhost:8000 and simple localhost just in case
-            return obj.replace("http://localhost:8000", "https://webinvita.onrender.com").replace("http://localhost", "https://webinvita.onrender.com")
+            # Replace localhost:8000 and simple localhost with actual BACKEND_URL
+            return obj.replace("http://localhost:8000", settings.BACKEND_URL).replace("http://localhost", settings.BACKEND_URL)
         if isinstance(obj, list):
             return [sanitize_urls(i) for i in obj]
         if isinstance(obj, dict):

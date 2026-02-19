@@ -31,7 +31,7 @@ import {
     ChevronRightIcon,
 } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
-import { FaInstagram, FaFacebook, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 
 
 
@@ -153,6 +153,22 @@ export default function Navbar() {
                                 color={useColorModeValue('gray.600', 'gray.200')}
                             >
                                 Ingresar
+                            </Button>
+                        )}
+                        {!isAuthenticated && (
+                            <Button
+                                as={RouterLink}
+                                to="/register"
+                                display={{ base: 'none', lg: 'inline-flex' }}
+                                fontSize={'sm'}
+                                fontWeight={600}
+                                color={'white'}
+                                bg={'gray.500'}
+                                _hover={{
+                                    bg: 'gray.400',
+                                }}
+                            >
+                                Crear Cuenta
                             </Button>
                         )}
                         <Button
@@ -348,28 +364,10 @@ const MobileNav = ({ onToggle, navItems }: { onToggle: () => void, navItems: Arr
             <Stack direction="row" spacing={6} justify="center" mt={6} pt={4} borderTopWidth={1} borderColor={borderColor}>
                 <IconButton
                     as={Link}
-                    href="https://instagram.com"
+                    href="https://www.instagram.com/sanjorenlared/"
                     isExternal
                     aria-label="Instagram"
                     icon={<FaInstagram size="24px" />}
-                    variant="ghost"
-                    colorScheme="brand"
-                />
-                <IconButton
-                    as={Link}
-                    href="https://facebook.com"
-                    isExternal
-                    aria-label="Facebook"
-                    icon={<FaFacebook size="24px" />}
-                    variant="ghost"
-                    colorScheme="brand"
-                />
-                <IconButton
-                    as={Link}
-                    href="https://linkedin.com"
-                    isExternal
-                    aria-label="LinkedIn"
-                    icon={<FaLinkedin size="24px" />}
                     variant="ghost"
                     colorScheme="brand"
                 />

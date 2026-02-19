@@ -1,0 +1,25 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<h2>¡Bienvenido a VICKING!</h2>
+<p>Hola {{ full_name }},</p>
+
+{% if is_active %}
+<p>Su cuenta ha sido creada exitosamente y ya se encuentra activa.</p>
+<p>Ahora puede iniciar sesión para acceder a todos nuestros servicios:</p>
+<ul>
+    <li>Solicitar servicio técnico de forma rápida (sus datos se completarán automáticamente).</li>
+    <li>Ver el historial y estado de sus solicitudes.</li>
+    <li>Acceder a manuales y documentación exclusiva.</li>
+</ul>
+<p><a href="https://vicking.com.ar/login"
+        style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Iniciar
+        Sesión</a></p>
+{% else %}
+<p>Su solicitud de registro ha sido recibida. Dado que se ha registrado como Distribuidor, su cuenta requiere una
+    verificación manual por parte de nuestro equipo.</p>
+<p>Le notificaremos por este medio en cuanto su cuenta sea activada (usualmente dentro de las 24-48 horas hábiles).</p>
+{% endif %}
+
+<p>Gracias por confiar en VICKING, respaldo y calidad Sanjor.</p>
+{% endblock %}

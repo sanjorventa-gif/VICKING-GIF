@@ -3,6 +3,7 @@ import shutil
 import os
 import uuid
 from typing import List
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -21,8 +22,8 @@ async def upload_file(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         # Return URL
-        # Assuming localhost for now, but in prod this should be dynamic or env var
-        url = f"http://localhost:8000/static/uploads/{unique_filename}"
+        # Use BACKEND_URL from settings
+        url = f"{settings.BACKEND_URL}/static/uploads/{unique_filename}"
         return {"url": url}
 
     except Exception as e:

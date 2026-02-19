@@ -1,0 +1,17 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<h2>Nuevo Usuario Registrado</h2>
+<p>Se ha registrado un nuevo usuario en el sistema:</p>
+
+<ul>
+    <li><strong>Nombre:</strong> {{ full_name }}</li>
+    <li><strong>Email:</strong> {{ email }}</li>
+    <li><strong>Empresa:</strong> {{ company }}</li>
+    <li><strong>Rol:</strong> {{ role }}</li>
+    <li><strong>Estado:</strong> {{ "Activo" if is_active else "Pendiente de Aprobación" }}</li>
+</ul>
+
+<p>Puede gestionar este usuario desde el panel de administración.</p>
+<p><a href="https://vicking.com.ar/admin/users">Ir al Panel de Usuarios</a></p>
+{% endblock %}

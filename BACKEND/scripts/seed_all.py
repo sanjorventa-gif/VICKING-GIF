@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.product import Product
 from app.models.download import Download
 from app.models.carousel import CarouselItem
+from app.models.faq import Faq
 from app.core.security import get_password_hash
 
 logger = logging.getLogger(__name__)
@@ -705,16 +706,20 @@ def seed_all():
         logger.info("Seeding Carousel...")
         carousel_data = [
             {
-                "title": "Innovación en Estufas",
-                "subtitle": "Tecnología de punta para su laboratorio.",
-                "image": "https://placehold.co/1200x400?text=Innovacion",
-                "order": 1
+                "title": "VICKING",
+                "subtitle": "Equipos médicos de alta calidad. Ahora con soporte técnico oficial de Sanjor.",
+                "image": "/images/carousel/vicking-slide-final.png",
+                "order": 1,
+                "button_text": "Solicitar Soporte",
+                "button_link": "/servicios/tecnico",
             },
             {
-                "title": "Calidad Garantizada",
-                "subtitle": "Más de 50 años de experiencia nos avalan.",
-                "image": "https://placehold.co/1200x400?text=Calidad",
-                "order": 2
+                "title": "Soporte Técnico Oficial",
+                "subtitle": "Garantizamos el funcionamiento de sus equipos con repuestos originales y técnicos certificados.",
+                "image": "/images/carousel/vicking-slide-final.png",
+                "order": 2,
+                "button_text": "Ver Preguntas Frecuentes",
+                "button_link": "/preguntas-frecuentes",
             }
         ]
 
@@ -722,7 +727,6 @@ def seed_all():
             carousel_entry = CarouselItem(**item)
             db.add(carousel_entry)
         
-        db.commit()
         db.commit()
         logger.info("Carousel seeded successfully!")
 
@@ -732,70 +736,34 @@ def seed_all():
         
         history_data = [
             {
-                "year": 2019,
-                "title": "SAN JOR Internacional",
-                "description": "SAN JOR participa en forma directa o indirecta en 7 ferias internacionales en 4 países, en todas ellas presentando el Sistema BLAST y las estufas EcoLogic.",
-                "order": 0
-            },
-            {
-                "year": 2018,
-                "title": "40 Aniversario SAN JOR",
-                "description": "Es el 40 aniversario de SAN JOR de su planta exclusiva para la fabricación de estufas de esterilización y cultivo, que se celebra en el evento de mayor repercusión en el sector salud en Puerto Madero – Buenos Aires.",
+                "year": 2004,
+                "title": "Premio a la Exportación",
+                "description": "VICKING es ganador del Premio a la Exportación Argentina como fabricante de Equipos Médicos, Hospitalarios y de Laboratorio otorgado por FedEx.",
                 "order": 1
             },
             {
-                "year": 2012,
-                "title": "Sistema BLAST",
-                "description": "El diseño del Sistema BLAST es reconocido y galardonado por su éxito e inserción en el mercado, en la premiación de JeFeba por la Provincia de Buenos Aires en Argentina.",
+                "year": 1995,
+                "title": "Lanzamiento Shaker Pro",
+                "description": "Carlos Recchia con un diseño único en el mundo lanza al mercado el agitador Shaker Pro.",
                 "order": 2
             },
             {
-                "year": 2010,
-                "title": "EcoLogic Control Digital",
-                "description": "En base al diseño de la tecnología “Sistema BLAST” se desarrolla el control digital automático para realizar los ciclos de esterilización de forma fácil para el operador, lanzando al mercado la línea EcoLogic.",
+                "year": 1993,
+                "title": "Grupo COEX",
+                "description": "VICKING es integrante y cofundador del Grupo COEX de Exportación, grupo de empresas fabricantes de equipos para medicina y bioquímica.",
                 "order": 3
             },
             {
-                "year": 2009,
-                "title": "Sistema BLAST",
-                "description": "Diseño propio de la tecnología “Sistema BLAST” para la máxima precisión en el control de temperatura para las Estufas utilizadas en laboratorio.",
+                "year": 1970,
+                "title": "Nueva Planta",
+                "description": "La fabrica se muda a una nueva planta de fabricación con el nombre de “VICKING”, liderando el mercado en el rubro.",
                 "order": 4
             },
             {
-                "year": 2004,
-                "title": "Premios a la exportación Argentina",
-                "description": "SAN JOR es ganador del Premio a la Exportación Argentina como fabricante de Equipos Médicos, Hospitalarios y de Laboratorio otorgado por FedEx.",
+                "year": 1960,
+                "title": "Inicios",
+                "description": "Carlos Recchia Inicia la fabricación de equipos de laboratorio con la marca Vicking.",
                 "order": 5
-            },
-            {
-                "year": 1994,
-                "title": "Ampliación de la empresa",
-                "description": "Aumenta la superficie de la planta de producción, oficinas y depósito en un 30%, mejorando la organización interna y los tiempos de producción.",
-                "order": 6
-            },
-            {
-                "year": 1993,
-                "title": "Grupo COEX de exportación",
-                "description": "SAN JOR es integrante y cofundador del Grupo COEX de Exportación, grupo de empresas fabricantes de equipos para medicina y bioquímica.",
-                "order": 7
-            },
-            {
-                "year": 1984,
-                "title": "Ampliación de la planta",
-                "description": "La ampliación de la planta de fabricación se triplica en superficie con respecto al año 1978, incorporando equipos de trabajo de alta tecnología.",
-                "order": 8
-            },
-            {
-                "year": 1978,
-                "title": "Nueva Planta",
-                "description": "La fabrica se muda a una nueva planta de fabricación con el nombre de “SAN JOR”, liderando el mercado en el rubro de fabricación de Estufas.",
-                "order": 9
-            },
-            {
-                "year": 1950,
-                "title": "Inicio de actividades",
-                "description": "Inicia la fabricación de Estufas, Cajas y tambores de acero inoxidable con el nombre de “Metalúrgica SAN JOR” para el área hospitalaria.",
-                "order": 10
             }
         ]
 
@@ -1073,6 +1041,36 @@ def seed_all():
         
         db.commit()
         logger.info("News seeded successfully!")
+
+        # --- SEED FAQS ---
+        logger.info("Seeding FAQs...")
+        faqs_data = [
+            {
+                "question": "¿Dónde puedo conseguir el manual de mi Estufa?",
+                "answer": "Podrá solicitarlo por mail a la dirección soporte@vicking.com.ar ya sean los manuales de Uso y otros archivos de su interés.",
+                "order": 1,
+                "is_active": True
+            },
+            {
+                "question": "¿Dónde puedo reparar mi equipo Vicking?",
+                "answer": "Podrá completar el formulario de soporte o escribir a la dirección soporte@vicking.com.ar",
+                "order": 2,
+                "is_active": True
+            },
+            {
+                "question": "¿Me pueden cotizar un Equipo nuevo?",
+                "answer": "Los equipos se han discontinuado en su fabricación pero quedan en stock equipos nuevos que tendrán su garantía correspondiente y servicio técnico de por vida. Puede enviar un mail a la dirección soporte@vicking.com.ar",
+                "order": 3,
+                "is_active": True
+            }
+        ]
+
+        for faq_data in faqs_data:
+            faq = Faq(**faq_data)
+            db.add(faq)
+        
+        db.commit()
+        logger.info("FAQs seeded successfully!")
 
     except Exception as e:
         logger.error(f"Error seeding data: {e}")

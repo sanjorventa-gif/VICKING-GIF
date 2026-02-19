@@ -22,15 +22,17 @@ def contact_form(
     
     email_data = contact_in.dict()
     
-    # Notify Admin
-    background_tasks.add_task(
-        send_email,
-        email_to=settings.EMAIL_TO_ADMIN,
-        subject=f"Nuevo Contacto - {contact_in.company or 'Web'} ({contact_in.name} {contact_in.lastname or ''})",
-        template_name="email/contact_notification.html",
-        environment=email_data,
-        reply_to=contact_in.email
-    )
+    # Notify Admin and Support
+    recipients = [settings.EMAIL_TO_ADMIN, "soporte@vicking.com.ar"]
+    for recipient in recipients:
+        background_tasks.add_task(
+            send_email,
+            email_to=recipient,
+            subject=f"Nuevo Contacto - {contact_in.company or 'Web'} ({contact_in.name} {contact_in.lastname or ''})",
+            template_name="email/contact_notification.html",
+            environment=email_data,
+            reply_to=contact_in.email
+        )
 
     # Confirm to User
     background_tasks.add_task(

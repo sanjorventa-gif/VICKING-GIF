@@ -22,7 +22,7 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Set all CORS enabled origins
 # Set all CORS enabled origins
-# CORS: allow Vercel and localhost (demo setup)
+    # CORS: allow origins from settings
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS],

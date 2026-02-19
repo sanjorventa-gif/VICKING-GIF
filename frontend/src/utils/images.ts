@@ -5,7 +5,7 @@ export const getImageUrl = (path: string | undefined): string => {
     }
 
     // Get API URL and strip /api/v1 to get root
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    const apiUrl = import.meta.env.VITE_API_URL;
     const backendUrl = apiUrl.replace('/api/v1', '');
 
     // Ensure path starts with /

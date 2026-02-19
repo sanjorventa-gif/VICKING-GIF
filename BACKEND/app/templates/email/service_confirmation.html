@@ -1,16 +1,26 @@
 {% extends "email/base.html" %}
 
 {% block content %}
-<h2>Solicitud Recibida</h2>
+<h2>Solicitud de Servicio Técnico Recibida</h2>
 <p>Estimado/a {{ name }},</p>
-<p>Hemos recibido su solicitud de servicio técnico para el equipo <strong>{{ stove_model }}</strong>.</p>
-<p>Nuestro equipo técnico analizará su caso y se pondrá en contacto con usted a la brevedad posible.</p>
+<p>Confirmamos la recepción de su solicitud de servicio técnico para el equipo <strong>{{ stove_model }}</strong>.</p>
+<p>Su caso ha sido ingresado en nuestro sistema y un técnico especializado ha sido notificado.</p>
 
-<h3>Detalles de su solicitud:</h3>
-<ul>
-    <li><strong>Nº de Caso (interno):</strong> {{ request_id }}</li>
-    <li><strong>Problema reportado:</strong> {{ problem_description }}</li>
-</ul>
+<div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h3>Detalles del Caso:</h3>
+    <ul>
+        <li><strong>Nº de Caso:</strong> #{{ request_id }}</li>
+        <li><strong>Equipo:</strong> {{ stove_model }}</li>
+        <li><strong>Problema Reportado:</strong> {{ problem_description }}</li>
+    </ul>
+</div>
 
-<p>Muchas gracias por confiar en VICKING.</p>
+<p><strong>¿Qué sigue ahora?</strong><br>
+    Nuestro equipo técnico analizará la información provista y se comunicará con usted para coordinar los siguientes
+    pasos (diagnóstico remoto, visita técnica o envío del equipo).</p>
+
+<p>Si tiene una cuenta registrada, puede seguir el estado de su solicitud en la sección <a
+        href="https://vicking.com.ar/mis-solicitudes">Mis Solicitudes</a>.</p>
+
+<p>Gracias por confiar en el Soporte Oficial VICKING.</p>
 {% endblock %}
