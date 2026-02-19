@@ -19,15 +19,35 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Use batch_alter_table to support SQLite and Postgres
+    conn = op.get_bind()
+    from sqlalchemy.engine.reflection import Inspector
+    inspector = Inspector.from_engine(conn)
+    
+    # 1. Cleanup leftover tmp table from failed previous runs
+    if '_alembic_tmp_templates' in inspector.get_table_names():
+        op.drop_table('_alembic_tmp_templates')
+
+    # 2. Drop the index on 'category' explicitly if it exists, to prevent batch_alter from tripping over it
+    # This addresses "no such column: category" during index recreation in batch mode
+    for idx in inspector.get_indexes('templates'):
+        if 'category' in idx['column_names']:
+            op.drop_index(idx['name'], table_name='templates')
+
+    columns = [c['name'] for c in inspector.get_columns('templates')]
+
     with op.batch_alter_table('templates', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('slug', sa.String(length=100), nullable=True))
-        batch_op.add_column(sa.Column('categories', sa.JSON(), nullable=True))
-        batch_op.add_column(sa.Column('show_on_home', sa.Boolean(), nullable=True))
-        batch_op.create_index(batch_op.f('ix_templates_slug'), ['slug'], unique=True)
-        # We try to drop 'category' if it exists. 
-        # Note: In a raw SQL migration we might need to be careful, but batch_op handles it generally.
-        batch_op.drop_column('category')
+        if 'slug' not in columns:
+            batch_op.add_column(sa.Column('slug', sa.String(length=100), nullable=True))
+            batch_op.create_index(batch_op.f('ix_templates_slug'), ['slug'], unique=True)
+            
+        if 'categories' not in columns:
+            batch_op.add_column(sa.Column('categories', sa.JSON(), nullable=True))
+            
+        if 'show_on_home' not in columns:
+            batch_op.add_column(sa.Column('show_on_home', sa.Boolean(), nullable=True))
+            
+        if 'category' in columns:
+            batch_op.drop_column('category')
 
 
 def downgrade() -> None:
