@@ -31,6 +31,7 @@ export default function HeroCarousel() {
     const [slides, setSlides] = useState<CarouselItem[]>([]);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [direction, setDirection] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -47,14 +48,14 @@ export default function HeroCarousel() {
                 setSlides([
                     {
                         id: 1,
-                        title: "VICKING",
-                        subtitle: "Equipos médicos de alta calidad. Ahora con soporte técnico oficial de Sanjor.",
+                        title: "Vicking anuncia",
+                        subtitle: "Se designa a SAN JOR para continuar con el service y garantía de todos los equipos Vicking",
                         image: "/images/carousel/vicking-slide-final.png",
                         order: 1,
                         overlay_effect: "grid",
                         transition_effect: "fade",
-                        button_text: "Solicitar Soporte",
-                        button_link: "/servicios/tecnico",
+                        button_text: "Preguntas frecuentes",
+                        button_link: "/preguntas-frecuentes",
                     },
                 ]);
             } finally {
@@ -75,14 +76,14 @@ export default function HeroCarousel() {
         });
     }, [slides.length]);
 
-    // Autoplay logic - resets when currentSlide changes (manual or auto)
+    // Autoplay logic
     useEffect(() => {
-        if (slides.length === 0) return;
+        if (slides.length === 0 || isHovered) return;
         const timer = setInterval(() => {
             paginate(1);
         }, AUTOPLAY_DELAY);
         return () => clearInterval(timer);
-    }, [currentSlide, slides.length, paginate]);
+    }, [currentSlide, slides.length, paginate, isHovered]);
 
     if (isLoading) {
         return <Skeleton height="calc(100vh - 60px)" width="full" />;
@@ -143,6 +144,8 @@ export default function HeroCarousel() {
             height="calc(100vh - 60px)"
             width="full"
             overflow="hidden"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             bg="gray.900"
         >
             <AnimatePresence initial={false} custom={{ direction, effect }} mode="popLayout">
@@ -337,7 +340,7 @@ export default function HeroCarousel() {
                     {slides.map((_, index) => (
                         <Box
                             key={index}
-                            w={3}
+                            w={currentSlide === index ? 8 : 3}
                             h={3}
                             rounded="full"
                             bg={currentSlide === index ? 'white' : 'whiteAlpha.500'}
@@ -347,7 +350,7 @@ export default function HeroCarousel() {
                                 setDirection(newDirection);
                                 setCurrentSlide(index);
                             }}
-                            transition="all 0.3s"
+                            transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                             _hover={{ bg: 'white' }}
                         />
                     ))}

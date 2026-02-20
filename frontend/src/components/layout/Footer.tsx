@@ -64,8 +64,7 @@ export default function Footer() {
                             VICKING
                         </Text>
                         <Text fontSize={'sm'}>
-                            Equipos médicos de alta calidad.
-                            Soporte técnico oficial garantizado.
+                            Fabricante de equipos de laboratorio
                         </Text>
                     </Stack>
 
@@ -103,7 +102,7 @@ export default function Footer() {
                             VICKING
                         </Text>
                         <Text fontSize={'sm'}>
-                            Equipos médicos de alta calidad. Soporte técnico oficial.
+                            Fabricante de equipos de laboratorio
                         </Text>
                     </Stack>
 

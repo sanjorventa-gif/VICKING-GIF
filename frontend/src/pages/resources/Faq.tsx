@@ -9,11 +9,12 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    useColorModeValue,
     Spinner,
     Flex,
+    Stack,
 } from '@chakra-ui/react';
 import { getFaqs, type Faq as FaqType } from '../../api/faqs';
+import FadeUp from '../../components/animations/FadeUp';
 
 export default function Faq() {
     const [faqs, setFaqs] = useState<FaqType[]>([]);
@@ -34,86 +35,98 @@ export default function Faq() {
     }, []);
 
     return (
-        <Box>
-            {/* Hero Section */}
+        <Box bg="surface.50" minH="100vh">
+            {/* Minimalist Hero Section */}
             <Box
-                bg={'brand.600'}
-                color={'white'}
-                py={{ base: 20, md: 32 }}
+                pt={{ base: 12, md: 16 }}
+                pb={{ base: 16, md: 24 }}
                 position="relative"
                 overflow="hidden"
-                backgroundImage="linear-gradient(135deg, var(--chakra-colors-brand-800) 0%, var(--chakra-colors-brand-600) 100%)"
             >
-                <Box
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="full"
-                    h="full"
-                    opacity={0.2}
-                    backgroundImage="linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)"
-                    backgroundSize="40px 40px"
-                />
-                <Container maxW={'container.xl'} textAlign="center" position="relative" zIndex={1}>
-                    <Heading
-                        as="h1"
-                        fontWeight={800}
-                        fontSize={{ base: '4xl', sm: '5xl', md: '6xl' }}
-                        lineHeight={'110%'}
-                        mb={6}
-                        letterSpacing="tight"
-                        textShadow="0px 2px 4px rgba(0,0,0,0.3)"
-                    >
-                        Preguntas Frecuentes
-                    </Heading>
-                    <Text fontSize={{ base: 'xl', md: '2xl' }} maxW="3xl" mx="auto" color="brand.100">
-                        Respuestas a las consultas habituales sobre los equipos y servicios
-                    </Text>
+                <Container maxW="container.md" textAlign="center" position="relative" zIndex={1}>
+                    <FadeUp>
+                        <Stack spacing={6}>
+                            <Heading
+                                as="h1"
+                                textStyle="h1"
+                                color="gray.900"
+                            >
+                                Preguntas Frecuentes
+                            </Heading>
+                            <Text fontSize="xl" color="gray.600" maxW="2xl" mx="auto" lineHeight="relaxed">
+                                Respuestas rápidas a las consultas más habituales sobre nuestros equipos, mantenciones y garantías.
+                            </Text>
+                        </Stack>
+                    </FadeUp>
                 </Container>
             </Box>
 
-            <Box py={16} bg={useColorModeValue('gray.50', 'gray.900')} position="relative">
-                {/* Background Pattern */}
+            {/* Accordion Content */}
+            <Box pb={24} position="relative">
                 <Box
                     position="absolute"
                     top="0"
                     left="0"
                     w="full"
                     h="full"
-                    opacity={0.2}
-                    backgroundImage="radial-gradient(#4299E1 1px, transparent 1px)"
-                    backgroundSize="20px 20px"
+                    opacity={0.08}
+                    backgroundImage="radial-gradient(black 1px, transparent 1px)"
+                    backgroundSize="24px 24px"
                     zIndex={0}
                     pointerEvents="none"
                 />
-                <Container maxW={'container.lg'} position="relative" zIndex={1}>
+
+                <Container maxW="container.md" position="relative" zIndex={1}>
                     {isLoading ? (
-                        <Flex justify="center" py={10}>
-                            <Spinner size="xl" />
+                        <Flex justify="center" py={16}>
+                            <Spinner size="xl" color="brand.500" thickness="3px" />
                         </Flex>
                     ) : (
-                        <Accordion allowMultiple>
-                            {faqs.map((faq) => (
-                                <AccordionItem key={faq.id} border="none" mb={4} bg={useColorModeValue('white', 'gray.800')} rounded="lg" shadow="sm">
-                                    <h2>
-                                        <AccordionButton _expanded={{ bg: 'brand.500', color: 'white' }} rounded="lg" p={4}>
-                                            <Box flex="1" textAlign="left" fontWeight="bold">
-                                                {faq.question}
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        {faq.answer}
-                                    </AccordionPanel>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
+                        <FadeUp delay={0.2}>
+                            <Accordion allowMultiple>
+                                {faqs.map((faq) => (
+                                    <AccordionItem
+                                        key={faq.id}
+                                        border="none"
+                                        mb={4}
+                                        layerStyle="premiumCard"
+                                        overflow="hidden"
+                                    >
+                                        <h2>
+                                            <AccordionButton
+                                                _expanded={{
+                                                    bg: 'brand.50',
+                                                    color: 'brand.700',
+                                                    borderBottomRadius: 'none'
+                                                }}
+                                                _hover={{ bg: 'surface.100' }}
+                                                p={6}
+                                                rounded="xl"
+                                                transition="all 0.2s"
+                                            >
+                                                <Box flex="1" textAlign="left" fontWeight="600" fontSize="lg" color="gray.800">
+                                                    {faq.question}
+                                                </Box>
+                                                <AccordionIcon color="brand.500" fontSize="xl" />
+                                            </AccordionButton>
+                                        </h2>
+                                        <AccordionPanel pb={6} px={6} color="gray.600" fontSize="md" lineHeight="tall" bg="white">
+                                            {faq.answer}
+                                        </AccordionPanel>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </FadeUp>
                     )}
+
                     {!isLoading && faqs.length === 0 && (
-                        <Box textAlign="center" py={10} color="gray.500">
-                            No hay preguntas frecuentes disponibles en este momento.
-                        </Box>
+                        <FadeUp>
+                            <Box textAlign="center" py={16} layerStyle="glass">
+                                <Text color="gray.500" fontSize="lg">
+                                    No hay preguntas frecuentes disponibles en este momento.
+                                </Text>
+                            </Box>
+                        </FadeUp>
                     )}
                 </Container>
             </Box>

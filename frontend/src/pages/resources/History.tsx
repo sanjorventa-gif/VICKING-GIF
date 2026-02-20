@@ -3,48 +3,41 @@ import {
     Container,
     Text,
     Heading,
-    useColorModeValue,
+    Stack,
 } from '@chakra-ui/react';
 import CompanyTimeline from '../../components/features/CompanyTimeline';
+import FadeUp from '../../components/animations/FadeUp';
 
 export default function History() {
-    const bgWhite = useColorModeValue('white', 'gray.800');
-
     return (
-        <Box>
-            {/* HERO SECTION */}
+        <Box bg="surface.50" minH="100vh">
+            {/* Minimalist Hero Section */}
             <Box
-                bg={'brand.600'}
-                color={'white'}
-                py={{ base: 10, md: 16 }} // Reduced padding
+                pt={{ base: 12, md: 16 }}
+                pb={{ base: 12, md: 16 }}
                 position="relative"
-                overflow="hidden"
-                backgroundImage="linear-gradient(135deg, var(--chakra-colors-brand-800) 0%, var(--chakra-colors-brand-600) 100%)"
             >
-                <Container maxW={'container.xl'} position="relative" zIndex={1} textAlign={'center'}>
-                    <Heading
-                        fontWeight={800}
-                        fontSize={{ base: '3xl', sm: '4xl', md: '5xl' }} // Reduced font size
-                        lineHeight={'110%'}
-                        mb={4}
-                        letterSpacing="tight"
-                        textShadow="0px 2px 4px rgba(0,0,0,0.3)"
-                    >
-                        NUESTRA{' '}
-                        <Text as={'span'} color={'white'}>
-                            HISTORIA
-                        </Text>
-                    </Heading>
-                    <Text fontSize={{ base: 'lg', md: 'xl' }} maxW={'3xl'} mx={'auto'} color={'brand.100'} fontWeight="normal">
-                        Hechos en la Historia de VICKING
-                    </Text>
+                <Container maxW={'container.md'} position="relative" zIndex={1} textAlign="center">
+                    <FadeUp>
+                        <Stack spacing={6}>
+                            <Heading
+                                as="h1"
+                                textStyle="h1"
+                                color="gray.900"
+                            >
+                                Nuestra Historia
+                            </Heading>
+                            <Text fontSize="xl" color="gray.500" maxW="2xl" mx="auto" lineHeight="relaxed">
+                                Descubre los hitos más relevantes y décadas de innovación que formaron el legado de Vicking.
+                            </Text>
+                        </Stack>
+                    </FadeUp>
                 </Container>
             </Box>
 
             {/* TIMELINE SECTION */}
             <Box
-                py={{ base: 0, md: 0 }}
-                bg={bgWhite}
+                pb={24}
                 position="relative"
             >
                 {/* Background Pattern */}
@@ -54,13 +47,20 @@ export default function History() {
                     left="0"
                     w="full"
                     h="full"
-                    opacity={0.2}
-                    backgroundImage="radial-gradient(#4299E1 1px, transparent 1px)"
-                    backgroundSize="20px 20px"
+                    opacity={0.08}
+                    backgroundImage="radial-gradient(black 1px, transparent 1px)"
+                    backgroundSize="24px 24px"
+                    zIndex={0}
+                    pointerEvents="none"
                 />
-                <Box position="relative" zIndex={1}>
-                    <CompanyTimeline hideTitle={true} />
-                </Box>
+
+                <Container maxW="container.xl" position="relative" zIndex={1}>
+                    <FadeUp delay={0.1}>
+                        <Box layerStyle="premiumCard" p={{ base: 6, md: 10 }}>
+                            <CompanyTimeline hideTitle={true} />
+                        </Box>
+                    </FadeUp>
+                </Container>
             </Box>
         </Box>
     );

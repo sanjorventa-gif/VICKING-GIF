@@ -255,7 +255,6 @@ export default function UserForm() {
                                     <option value="Laboratorio Científico">Laboratorio Científico</option>
                                     <option value="Laboratorio Industrial">Laboratorio Industrial</option>
                                     <option value="Producción">Producción</option>
-                                    <option value="Sala Estéril">Sala Estéril</option>
                                     <option value="Otro">Otro</option>
                                 </Select>
                             </FormControl>

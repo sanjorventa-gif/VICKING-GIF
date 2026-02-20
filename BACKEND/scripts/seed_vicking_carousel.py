@@ -20,22 +20,22 @@ def seed_carousel_vicking():
 
         vicking_data = [
             {
-                "title": "VICKING",
-                "subtitle": "Equipos médicos de alta calidad. Ahora con soporte técnico oficial de Sanjor.",
+                "title": "Vicking anuncia",
+                "subtitle": "Se designa a SAN JOR para continuar con el service y garantía de todos los equipos Vicking",
                 "image": "/images/carousel/vicking-slide-final.png",
                 "order": 1,
-                "button_text": "Solicitar Soporte",
-                "button_link": "/servicios/tecnico",
+                "button_text": "Preguntas frecuentes",
+                "button_link": "/preguntas-frecuentes",
                 "overlay_effect": "grid",
                 "transition_effect": "fade"
             },
             {
-                "title": "Soporte Técnico Oficial",
-                "subtitle": "Garantizamos el funcionamiento de sus equipos con repuestos originales y técnicos certificados.",
+                "title": "Soporte técnico oficial",
+                "subtitle": "SAN JOR realizará el service de todos los equipos Vicking con repuestos originales",
                 "image": "/images/carousel/vicking-slide-final.png",
                 "order": 2,
-                "button_text": "Ver Preguntas Frecuentes",
-                "button_link": "/preguntas-frecuentes",
+                "button_text": "Solicitar soporte",
+                "button_link": "/servicios/tecnico",
                 "overlay_effect": "grid",
                 "transition_effect": "fade"
             }

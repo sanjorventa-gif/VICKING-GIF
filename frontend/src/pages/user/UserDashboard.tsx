@@ -82,7 +82,7 @@ export default function UserDashboard() {
                 left="0"
                 w="full"
                 h="full"
-                opacity={0.03}
+                opacity={0.08}
                 backgroundImage="radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)"
                 backgroundSize="30px 30px"
                 zIndex={0}

@@ -65,7 +65,7 @@ export default function RegisterSuccess() {
                 left="0"
                 w="full"
                 h="full"
-                opacity={0.05}
+                opacity={0.1}
                 backgroundImage="radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)"
                 backgroundSize="40px 40px"
                 color="brand.500"

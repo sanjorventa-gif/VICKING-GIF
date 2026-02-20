@@ -50,20 +50,22 @@ export default function Navbar() {
     return (
         <Box>
             <Flex
-                bg={useColorModeValue('whiteAlpha.800', 'gray.800')}
-                color={useColorModeValue('gray.600', 'white')}
-                minH={'60px'}
+                bg={useColorModeValue('rgba(253, 253, 254, 0.8)', 'rgba(10, 10, 10, 0.8)')}
+                color={useColorModeValue('gray.800', 'white')}
+                minH={'64px'}
                 py={{ base: 2 }}
                 px={{ base: 4 }}
                 borderBottom={1}
                 borderStyle={'solid'}
-                borderColor={useColorModeValue('gray.200', 'gray.900')}
+                borderColor={useColorModeValue('surface.border', 'whiteAlpha.100')}
                 align={'center'}
                 position="fixed"
                 w="100%"
                 zIndex={1000}
                 top={0}
-                backdropFilter="blur(10px)"
+                backdropFilter="blur(12px) saturate(180%)"
+                transition="all 0.3s ease-in-out"
+                sx={{ WebkitBackdropFilter: "blur(12px) saturate(180%)" }}
             >
                 <Container maxW="container.xl" display="flex" alignItems="center">
                     <Flex
