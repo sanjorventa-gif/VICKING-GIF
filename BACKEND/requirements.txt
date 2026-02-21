@@ -15,3 +15,7 @@ jinja2
 gunicorn
 alembic
 aiosqlite
+psycopg2-binary>=2.9.0
+asyncpg>=0.29.0
+aiosmtplib>=3.0.1
+slowapi>=0.1.9

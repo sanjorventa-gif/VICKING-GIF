@@ -3,7 +3,18 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from app.db.session import SessionLocal, engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
+
+sync_uri = settings.SQLALCHEMY_DATABASE_URI
+if "postgresql+asyncpg" in sync_uri:
+    sync_uri = sync_uri.replace("postgresql+asyncpg", "postgresql")
+elif "sqlite+aiosqlite" in sync_uri:
+    sync_uri = sync_uri.replace("sqlite+aiosqlite", "sqlite")
+
+engine = create_engine(sync_uri)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 from app.db.base import Base
 from app.models.user import User
 from app.models.product import Product
@@ -17,14 +28,19 @@ logger = logging.getLogger(__name__)
 def seed_all():
     db = SessionLocal()
     try:
-        # Re-create tables to ensure schema matches
-        logger.info("Re-creating tables...")
-        Base.metadata.drop_all(bind=engine)
+        # Create tables to ensure schema matches (won't drop them if they exist)
+        logger.info("Creating tables...")
         Base.metadata.create_all(bind=engine)
+
+        # Check if database is already seeded by checking if admin user exists
+        admin_email = "admin@vicking.com.ar"
+        existing_admin = db.query(User).filter(User.email == admin_email).first()
+        if existing_admin:
+            logger.info("Database already seeded. Skipping seed sequence.")
+            return
 
         # --- SEED ADMIN USER ---
         logger.info("Seeding Admin User...")
-        admin_email = "admin@vicking.com.ar"
         admin_password = "vicking2024" # Updated password for consistency, user can change
         
         user = User(
@@ -1079,4 +1095,6 @@ def seed_all():
         db.close()
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger.info("Starting sequence...")
     seed_all()

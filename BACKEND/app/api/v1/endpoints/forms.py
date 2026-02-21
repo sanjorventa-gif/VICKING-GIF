@@ -1,6 +1,7 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app import crud, models, schemas
 from app.api import deps
 from app.models.form import Form
@@ -13,40 +14,43 @@ router = APIRouter()
 # --- Public Endpoints ---
 
 @router.get("/", response_model=List[schemas.Form])
-def read_forms(
-    db: Session = Depends(deps.get_db),
+async def read_forms(
+    db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
 ) -> Any:
     """
     Retrieve active forms (Public).
     """
-    forms = db.query(Form).filter(Form.is_active == True).offset(skip).limit(limit).all()
-    return forms
+    result = await db.execute(select(Form).filter(Form.is_active == True).offset(skip).limit(limit))
+    return result.scalars().all()
 
 @router.get("/{slug}", response_model=schemas.Form)
-def read_form_by_slug(
+async def read_form_by_slug(
     slug: str,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
 ) -> Any:
     """
     Get form definition by slug (Public).
     """
-    form = db.query(Form).filter(Form.slug == slug, Form.is_active == True).first()
+    result = await db.execute(select(Form).filter(Form.slug == slug, Form.is_active == True))
+    form = result.scalars().first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     return form
 
 @router.post("/{slug}/submit", response_model=schemas.FormSubmission)
-def submit_form(
+async def submit_form(
     slug: str,
     submission_in: schemas.FormSubmissionCreate,
-    db: Session = Depends(deps.get_db),
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(deps.get_db),
 ) -> Any:
     """
     Submit a form (Public).
     """
-    form = db.query(Form).filter(Form.slug == slug, Form.is_active == True).first()
+    result = await db.execute(select(Form).filter(Form.slug == slug, Form.is_active == True))
+    form = result.scalars().first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     
@@ -55,8 +59,8 @@ def submit_form(
         data=submission_in.data
     )
     db.add(submission)
-    db.commit()
-    db.refresh(submission)
+    await db.commit()
+    await db.refresh(submission)
 
     # -------------------------
     # Send Email Notifications
@@ -71,7 +75,8 @@ def submit_form(
                 break
 
         # 1. To Admin
-        send_email(
+        background_tasks.add_task(
+            send_email,
             email_to=settings.EMAIL_TO_ADMIN,
             subject=f"Nuevo Envío: {form.title}",
             template_name="email/submission_notification.html",
@@ -83,7 +88,8 @@ def submit_form(
 
         # 2. To User
         if user_email:
-            send_email(
+            background_tasks.add_task(
+                send_email,
                 email_to=user_email,
                 subject=f"Recibimos tu formulario: {form.title}",
                 template_name="email/submission_confirmation.html",
@@ -100,9 +106,9 @@ def submit_form(
 # --- Admin Endpoints ---
 
 @router.post("/", response_model=schemas.Form)
-def create_form(
+async def create_form(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     form_in: schemas.FormCreate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
@@ -110,7 +116,8 @@ def create_form(
     Create new form (Admin).
     """
     # Check if slug exists
-    existing_form = db.query(Form).filter(Form.slug == form_in.slug).first()
+    result = await db.execute(select(Form).filter(Form.slug == form_in.slug))
+    existing_form = result.scalars().first()
     if existing_form:
         raise HTTPException(status_code=400, detail="Form with this slug already exists")
 
@@ -122,14 +129,14 @@ def create_form(
         is_active=form_in.is_active
     )
     db.add(form)
-    db.commit()
-    db.refresh(form)
+    await db.commit()
+    await db.refresh(form)
     return form
 
 @router.put("/{id}", response_model=schemas.Form)
-def update_form(
+async def update_form(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     id: int,
     form_in: schemas.FormUpdate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -137,7 +144,8 @@ def update_form(
     """
     Update a form (Admin).
     """
-    form = db.query(Form).filter(Form.id == id).first()
+    result = await db.execute(select(Form).filter(Form.id == id))
+    form = result.scalars().first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     
@@ -149,35 +157,38 @@ def update_form(
         setattr(form, field, value)
 
     db.add(form)
-    db.commit()
-    db.refresh(form)
+    await db.commit()
+    await db.refresh(form)
     return form
 
 @router.delete("/{id}", response_model=schemas.Form)
-def delete_form(
+async def delete_form(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     id: int,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Delete a form (Admin).
     """
-    form = db.query(Form).filter(Form.id == id).first()
+    result = await db.execute(select(Form).filter(Form.id == id))
+    form = result.scalars().first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     
-    # Delete submissions first (or use cascade in model)
-    db.query(FormSubmission).filter(FormSubmission.form_id == id).delete()
+    # Delete submissions first
+    submissions = await db.execute(select(FormSubmission).filter(FormSubmission.form_id == id))
+    for sub in submissions.scalars().all():
+        await db.delete(sub)
     
-    db.delete(form)
-    db.commit()
+    await db.delete(form)
+    await db.commit()
     return form
 
 @router.get("/{id}/submissions", response_model=List[schemas.FormSubmission])
-def read_form_submissions(
+async def read_form_submissions(
     id: int,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -185,9 +196,10 @@ def read_form_submissions(
     """
     Get submissions for a form (Admin).
     """
-    form = db.query(Form).filter(Form.id == id).first()
+    result = await db.execute(select(Form).filter(Form.id == id))
+    form = result.scalars().first()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
         
-    submissions = db.query(FormSubmission).filter(FormSubmission.form_id == id).offset(skip).limit(limit).all()
-    return submissions
+    submissions = await db.execute(select(FormSubmission).filter(FormSubmission.form_id == id).offset(skip).limit(limit))
+    return submissions.scalars().all()

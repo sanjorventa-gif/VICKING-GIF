@@ -79,7 +79,7 @@ export default function Home() {
             </Box>
 
             {/* Call to Action */}
-            <Box py={{ base: 12, md: 16 }} bg="brand.900" position="relative" overflow="hidden">
+            <Box py={{ base: 12, md: 16 }} bgGradient="linear(to-r, blue.800, cyan.400)" position="relative" overflow="hidden">
                 <Box
                     position="absolute"
                     top="-50%"

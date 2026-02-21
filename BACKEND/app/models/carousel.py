@@ -11,3 +11,5 @@ class CarouselItem(Base):
     button_link = Column(String, nullable=True)
     transition_effect = Column(String, default="slide") # fade, slide, zoom
     overlay_effect = Column(String, default="grid") # grid, dots, scanlines, none
+    text_position_y = Column(String, default="center") # top, center, bottom
+    text_position_x = Column(String, default="center") # left, center, right

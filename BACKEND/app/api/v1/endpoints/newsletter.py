@@ -1,31 +1,33 @@
 from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app import crud, models, schemas
 from app.api import deps
 
 router = APIRouter()
 
 @router.post("/", response_model=schemas.Newsletter)
-def create_newsletter_subscription(
+async def create_newsletter_subscription(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     newsletter_in: schemas.NewsletterCreate,
 ) -> Any:
     """
     Subscribe to newsletter.
     """
     # Check if exists
-    existing = db.query(models.Newsletter).filter(models.Newsletter.email == newsletter_in.email).first()
+    result = await db.execute(select(models.Newsletter).filter(models.Newsletter.email == newsletter_in.email))
+    existing = result.scalars().first()
     if existing:
         return existing
         
-    newsletter = crud.newsletter.create(db, obj_in=newsletter_in)
+    newsletter = await crud.newsletter.create(db, obj_in=newsletter_in)
     return newsletter
 
 @router.get("/", response_model=List[schemas.Newsletter])
-def read_newsletters(
-    db: Session = Depends(deps.get_db),
+async def read_newsletters(
+    db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -33,16 +35,14 @@ def read_newsletters(
     """
     Retrieve newsletter subscribers.
     """
-    """
-    Retrieve newsletter subscribers.
-    """
     from datetime import datetime
     
     # Get standalone newsletter subscribers
-    subscribers = crud.newsletter.get_multi(db, skip=skip, limit=limit)
+    subscribers = await crud.newsletter.get_multi(db, skip=skip, limit=limit)
     
     # Get users subscribed
-    users = db.query(models.User).filter(models.User.newsletter_subscribed == True).offset(skip).limit(limit).all()
+    result = await db.execute(select(models.User).filter(models.User.newsletter_subscribed == True).offset(skip).limit(limit))
+    users = result.scalars().all()
     
     results = []
     
@@ -64,17 +64,17 @@ def read_newsletters(
     return results
 
 @router.delete("/{id}", response_model=schemas.Newsletter)
-def delete_newsletter(
+async def delete_newsletter(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     id: int,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Delete a newsletter subscription.
     """
-    newsletter = crud.newsletter.get(db, id=id)
+    newsletter = await crud.newsletter.get(db, id=id)
     if not newsletter:
         raise HTTPException(status_code=404, detail="Newsletter subscription not found")
-    newsletter = crud.newsletter.remove(db=db, id=id)
+    newsletter = await crud.newsletter.remove(db=db, id=id)
     return newsletter

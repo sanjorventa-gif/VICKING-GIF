@@ -1,28 +1,32 @@
 from datetime import timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud, schemas, models
 from app.api import deps
 from app.core import security
 from app.core.config import settings
 from app.core.email import send_email
+from app.core.rate_limit import limiter
+from fastapi import Request
 
 router = APIRouter()
 
 @router.post("/login/access-token", response_model=schemas.Token)
-def login_access_token(
-    db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
+@limiter.limit("20/minute")
+async def login_access_token(
+    request: Request,
+    db: AsyncSession = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
     """
     OAuth2 compatible token login, get an access token for future requests
     """
     try:
         print(f"Login attempt: {form_data.username} / {form_data.password}")
-        user = crud.user.authenticate(
+        user = await crud.user.authenticate(
             db, email=form_data.username, password=form_data.password
         )
         if not user:
@@ -43,22 +47,25 @@ def login_access_token(
         raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 @router.post("/test-token", response_model=schemas.User)
-def test_token(current_user: schemas.User = Depends(deps.get_current_user)) -> Any:
+async def test_token(current_user: schemas.User = Depends(deps.get_current_user)) -> Any:
     """
     Test access token
     """
     return current_user
 
 @router.post("/register", response_model=schemas.User)
-def register(
+@limiter.limit("30/minute")
+async def register(
+    request: Request,
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     user_in: schemas.UserCreate,
+    background_tasks: BackgroundTasks,
 ) -> Any:
     """
     Create new user without the need to be logged in.
     """
-    user = crud.user.get_by_email(db, email=user_in.email)
+    user = await crud.user.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(
             status_code=400,
@@ -92,14 +99,15 @@ def register(
     user_in.is_superuser = False
     
     # Create user
-    user = crud.user.create(db, obj_in=user_in)
+    user = await crud.user.create(db, obj_in=user_in)
 
     # -------------------------
     # Send Email Notifications
     # -------------------------
     try:
         # 1. To Admin
-        send_email(
+        background_tasks.add_task(
+            send_email,
             email_to=settings.EMAIL_TO_ADMIN,
             subject=f"Nuevo Usuario Registrado - {user_in.full_name}",
             template_name="email/new_account_admin.html",
@@ -113,7 +121,8 @@ def register(
         )
 
         # 2. To User (Welcome)
-        send_email(
+        background_tasks.add_task(
+            send_email,
             email_to=user_in.email,
             subject="Bienvenido a SAN JOR",
             template_name="email/new_account.html",

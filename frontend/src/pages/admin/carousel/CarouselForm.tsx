@@ -35,6 +35,8 @@ export default function CarouselForm() {
         button_link: '',
         transition_effect: 'slide',
         overlay_effect: 'grid',
+        text_position_y: 'center',
+        text_position_x: 'center',
     });
 
     useEffect(() => {
@@ -55,6 +57,8 @@ export default function CarouselForm() {
                 button_link: data.button_link || '',
                 transition_effect: data.transition_effect || 'slide',
                 overlay_effect: data.overlay_effect || 'grid',
+                text_position_y: data.text_position_y || 'center',
+                text_position_x: data.text_position_x || 'center',
             });
         } catch (error) {
             toast({
@@ -169,6 +173,30 @@ export default function CarouselForm() {
                                 <option value="dots">Puntos (Dots)</option>
                                 <option value="scanlines">Líneas de Escaneo</option>
                                 <option value="none">Ninguno</option>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Posición Vertical del Texto</FormLabel>
+                            <Select
+                                value={formData.text_position_y}
+                                onChange={(e) => setFormData({ ...formData, text_position_y: e.target.value })}
+                            >
+                                <option value="top">Arriba</option>
+                                <option value="center">Centro</option>
+                                <option value="bottom">Abajo</option>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Posición Horizontal del Texto</FormLabel>
+                            <Select
+                                value={formData.text_position_x}
+                                onChange={(e) => setFormData({ ...formData, text_position_x: e.target.value })}
+                            >
+                                <option value="left">Izquierda</option>
+                                <option value="center">Centro</option>
+                                <option value="right">Derecha</option>
                             </Select>
                         </FormControl>
 

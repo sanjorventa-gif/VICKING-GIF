@@ -10,6 +10,8 @@ export interface CarouselItem {
     button_link?: string;
     transition_effect?: string;
     overlay_effect?: string;
+    text_position_y?: string;
+    text_position_x?: string;
 }
 
 export interface CarouselItemCreate {
@@ -21,6 +23,8 @@ export interface CarouselItemCreate {
     button_link?: string;
     transition_effect?: string;
     overlay_effect?: string;
+    text_position_y?: string;
+    text_position_x?: string;
 }
 
 export interface CarouselItemUpdate {
@@ -32,6 +36,8 @@ export interface CarouselItemUpdate {
     button_link?: string;
     transition_effect?: string;
     overlay_effect?: string;
+    text_position_y?: string;
+    text_position_x?: string;
 }
 
 export const getCarouselItems = async (): Promise<CarouselItem[]> => {

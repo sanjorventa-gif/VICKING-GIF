@@ -1,7 +1,8 @@
 import re
 import unicodedata
 from typing import Any, Dict, Union
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.crud.base import CRUDBase
 from app.models.news import News
 from app.schemas.news import NewsCreate, NewsUpdate
@@ -18,7 +19,7 @@ def slugify(value: str) -> str:
     return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 class CRUDNews(CRUDBase[News, NewsCreate, NewsUpdate]):
-    def create(self, db: Session, *, obj_in: NewsCreate) -> News:
+    async def create(self, db: AsyncSession, *, obj_in: NewsCreate) -> News:
         obj_in_data = obj_in.model_dump()
         
         # Generate slug if not present
@@ -27,20 +28,23 @@ class CRUDNews(CRUDBase[News, NewsCreate, NewsUpdate]):
             # Ensure unique
             counter = 1
             original_slug = slug
-            while db.query(News).filter(News.slug == slug).first():
+            while True:
+                existing = await db.execute(select(News).filter(News.slug == slug))
+                if not existing.scalars().first():
+                    break
                 slug = f"{original_slug}-{counter}"
                 counter += 1
             obj_in_data["slug"] = slug
 
         db_obj = News(**obj_in_data)
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        await db.commit()
+        await db.refresh(db_obj)
         return db_obj
 
-    def update(
+    async def update(
         self,
-        db: Session,
+        db: AsyncSession,
         *,
         db_obj: News,
         obj_in: Union[NewsUpdate, Dict[str, Any]]
@@ -55,11 +59,14 @@ class CRUDNews(CRUDBase[News, NewsCreate, NewsUpdate]):
             # Ensure unique, excluding current object
             counter = 1
             original_slug = slug
-            while db.query(News).filter(News.slug == slug).filter(News.id != db_obj.id).first():
+            while True:
+                existing = await db.execute(select(News).filter(News.slug == slug).filter(News.id != db_obj.id))
+                if not existing.scalars().first():
+                    break
                 slug = f"{original_slug}-{counter}"
                 counter += 1
             update_data["slug"] = slug
         
-        return super().update(db, db_obj=db_obj, obj_in=update_data)
+        return await super().update(db, db_obj=db_obj, obj_in=update_data)
 
 news = CRUDNews(News)

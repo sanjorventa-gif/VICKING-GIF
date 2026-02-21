@@ -1,7 +1,6 @@
 import logging
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import aiosmtplib
+from email.message import EmailMessage
 from typing import Any, Dict, Optional
 from jinja2 import Environment, FileSystemLoader
 from app.core.config import settings
@@ -14,7 +13,7 @@ logger = logging.getLogger(__name__)
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 env = Environment(loader=FileSystemLoader(templates_dir))
 
-def send_email(
+async def send_email(
     email_to: str,
     subject: str = "",
     template_name: str = "",
@@ -22,12 +21,12 @@ def send_email(
     reply_to: Optional[str] = None
 ) -> None:
     """
-    Send an email using the configured SMTP server.
+    Send an email asynchronously using aiosmtplib.
     """
     assert settings.EMAILS_FROM_EMAIL, "EMAILS_FROM_EMAIL must be set"
 
     try:
-        message = MIMEMultipart("alternative")
+        message = EmailMessage()
         message["Subject"] = subject
         message["From"] = f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
         message["To"] = email_to
@@ -39,21 +38,22 @@ def send_email(
         template = env.get_template(template_name)
         html_content = template.render(**environment)
         
-        part = MIMEText(html_content, "html")
-        message.attach(part)
+        message.add_alternative(html_content, subtype="html")
 
         # SMTP Connection
         # DonWeb typically uses SSL on 465 or STARTTLS on 587. 
         # Using SSL (SMTP_SSL) for port 465 is standard.
-        if settings.SMTP_PORT == 465:
-            server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
-        else:
-            server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
-            server.starttls()
+        use_tls = settings.SMTP_PORT == 465
 
-        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-        server.sendmail(settings.EMAILS_FROM_EMAIL, email_to, message.as_string())
-        server.quit()
+        await aiosmtplib.send(
+            message,
+            hostname=settings.SMTP_HOST,
+            port=settings.SMTP_PORT,
+            username=settings.SMTP_USER,
+            password=settings.SMTP_PASSWORD,
+            use_tls=use_tls,
+            start_tls=not use_tls,
+        )
         
         logger.info(f"Email sent to {email_to}: {subject}")
 

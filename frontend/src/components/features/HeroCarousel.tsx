@@ -96,6 +96,14 @@ export default function HeroCarousel() {
     const currentItem = slides[currentSlide];
     const effect = currentItem.transition_effect || 'slide';
     const overlayEffect = currentItem.overlay_effect || 'grid';
+    const textPosY = currentItem.text_position_y || 'center';
+    const textPosX = currentItem.text_position_x || 'center';
+
+    // Position mappings for Flex (direction="column")
+    const justifyMap: Record<string, string> = { top: 'flex-start', center: 'center', bottom: 'flex-end' };
+    const alignMap: Record<string, string> = { left: 'flex-start', center: 'center', right: 'flex-end' };
+    const textAlignMap: Record<string, 'left' | 'center' | 'right'> = { left: 'left', center: 'center', right: 'right' };
+
     // Use the image directly. If missing, the Image component's fallback will handle it.
     const imgSrc = currentItem.image;
 
@@ -205,14 +213,20 @@ export default function HeroCarousel() {
                         <Container height="100%" maxW="container.xl" position="relative" zIndex={3}>
                             <Flex
                                 height="100%"
-                                align="center"
-                                justify="center"
+                                align={alignMap[textPosX]}
+                                justify={justifyMap[textPosY]}
                                 direction="column"
-                                textAlign="center"
+                                textAlign={textAlignMap[textPosX]}
                                 color="white"
                                 px={4}
+                                py={{ base: 12, md: 24 }} // Padding to prevent text from hitting the very edge
                             >
-                                <Stack spacing={6} maxW="3xl" transform="translateY(-10vh)">
+                                <Stack
+                                    spacing={6}
+                                    maxW="3xl"
+                                    transform={textPosY === 'center' ? "translateY(-10vh)" : "none"}
+                                    alignItems={textPosX === 'left' ? 'flex-start' : textPosX === 'right' ? 'flex-end' : 'center'}
+                                >
                                     <motion.div
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}

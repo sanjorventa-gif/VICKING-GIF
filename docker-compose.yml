@@ -1,14 +1,28 @@
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: vicking_db
+    environment:
+      POSTGRES_USER: vicking
+      POSTGRES_PASSWORD: vicking_password
+      POSTGRES_DB: vicking_db
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
 
   backend:
     build:
       context: ./BACKEND
     container_name: vicking_backend
 
-    volumes:
-      # Base de datos persistente (SOLUCIÓN REAL)
-      - ./data:/data
+    depends_on:
+      - db
 
+    volumes:
+      # Base de datos persistente
+      - ./data:/data
       # Si guardás imágenes
       - ./IMAGENES:/app/IMAGENES
 
@@ -16,8 +30,8 @@ services:
       - .env
 
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////data/vicking.db
-      - SQLALCHEMY_DATABASE_URI=sqlite:////data/vicking.db
+      - DATABASE_URL=postgresql+asyncpg://vicking:vicking_password@db:5432/vicking_db
+      - SQLALCHEMY_DATABASE_URI=postgresql+asyncpg://vicking:vicking_password@db:5432/vicking_db
 
     ports:
       - "8000:8000"

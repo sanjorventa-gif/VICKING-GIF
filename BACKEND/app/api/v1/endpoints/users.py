@@ -3,7 +3,7 @@ from typing import Any, List
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud, models, schemas
 from app.api import deps
@@ -12,8 +12,8 @@ from app.core.config import settings
 router = APIRouter()
 
 @router.get("/", response_model=List[schemas.User])
-def read_users(
-    db: Session = Depends(deps.get_db),
+async def read_users(
+    db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -21,38 +21,38 @@ def read_users(
     """
     Retrieve users.
     """
-    users = crud.user.get_multi(db, skip=skip, limit=limit)
+    users = await crud.user.get_multi(db, skip=skip, limit=limit)
     return users
 
 @router.post("/", response_model=schemas.User)
-def create_user(
+async def create_user(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     user_in: schemas.UserCreate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Create new user.
     """
-    user = crud.user.get_by_email(db, email=user_in.email)
+    user = await crud.user.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
         )
-    user = crud.user.create(db, obj_in=user_in)
+    user = await crud.user.create(db, obj_in=user_in)
     return user
 
 @router.get("/{user_id}", response_model=schemas.User)
-def read_user_by_id(
+async def read_user_by_id(
     user_id: int,
     current_user: models.User = Depends(deps.get_current_active_superuser),
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
 ) -> Any:
     """
     Get a specific user by id.
     """
-    user = crud.user.get(db, id=user_id)
+    user = await crud.user.get(db, id=user_id)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -61,9 +61,9 @@ def read_user_by_id(
     return user
 
 @router.put("/{user_id}", response_model=schemas.User)
-def update_user(
+async def update_user(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     user_id: int,
     user_in: schemas.UserUpdate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -71,7 +71,7 @@ def update_user(
     """
     Update a user.
     """
-    user = crud.user.get(db, id=user_id)
+    user = await crud.user.get(db, id=user_id)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -81,20 +81,20 @@ def update_user(
         raise HTTPException(
             status_code=400, detail="The superuser cannot be modified"
         )
-    user = crud.user.update(db, db_obj=user, obj_in=user_in)
+    user = await crud.user.update(db, db_obj=user, obj_in=user_in)
     return user
 
 @router.delete("/{user_id}", response_model=schemas.User)
-def delete_user(
+async def delete_user(
     *,
-    db: Session = Depends(deps.get_db),
+    db: AsyncSession = Depends(deps.get_db),
     user_id: int,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Delete a user.
     """
-    user = crud.user.get(db, id=user_id)
+    user = await crud.user.get(db, id=user_id)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -108,5 +108,5 @@ def delete_user(
         raise HTTPException(
             status_code=400, detail="The superuser cannot be deleted"
         )
-    user = crud.user.remove(db=db, id=user_id)
+    user = await crud.user.remove(db=db, id=user_id)
     return user

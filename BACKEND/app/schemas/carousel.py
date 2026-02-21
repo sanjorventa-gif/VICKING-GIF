@@ -11,6 +11,8 @@ class CarouselItemBase(BaseModel):
     button_link: Optional[str] = None
     transition_effect: Optional[str] = "slide"
     overlay_effect: Optional[str] = "grid"
+    text_position_y: Optional[str] = "center"
+    text_position_x: Optional[str] = "center"
 
 # Properties to receive on item creation
 class CarouselItemCreate(CarouselItemBase):

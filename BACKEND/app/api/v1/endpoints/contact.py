@@ -10,7 +10,7 @@ from app.core.recaptcha import verify_recaptcha
 router = APIRouter()
 
 @router.post("/", status_code=200)
-def contact_form(
+async def contact_form(
     contact_in: schemas.ContactCreate,
     background_tasks: BackgroundTasks,
 ) -> Any:

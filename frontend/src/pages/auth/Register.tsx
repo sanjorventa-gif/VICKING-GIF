@@ -133,6 +133,14 @@ export default function Register() {
                         </Stack>
 
                         <Stack spacing={4}>
+                            <FormControl id="role" isRequired>
+                                <FormLabel fontSize="sm">Tipo de Cuenta</FormLabel>
+                                <Select name="role" size="sm" value={formData.role} onChange={handleChange}>
+                                    <option value="usuario_nacional">Usuario</option>
+                                    <option value="distribuidor_nacional">Distribuidor</option>
+                                </Select>
+                            </FormControl>
+
                             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                 <FormControl id="name" isRequired>
                                     <FormLabel fontSize="sm">Nombre</FormLabel>
