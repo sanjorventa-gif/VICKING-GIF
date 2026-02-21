@@ -35,5 +35,6 @@ Thumbs.db
 *.sqlite3
 !BACKEND/initial.db
 
-
 imagenes/
+pgdata/
+BACKEND/data/
