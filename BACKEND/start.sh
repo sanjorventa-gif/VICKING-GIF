@@ -4,6 +4,13 @@ set -e
 # Make BACKEND the import root
 export PYTHONPATH="$(pwd)"
 
+if [ ! -f "/data/vicking.db" ]; then
+    echo "Base de datos no encontrada en /data. Copiando la versión inicial pre-cargada (initial.db)..."
+    cp initial.db /data/vicking.db
+else
+    echo "Base de datos existente encontrada en /data."
+fi
+
 echo "Checking Alembic heads..."
 python -m alembic heads
 

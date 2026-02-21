@@ -33,7 +33,7 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3
-backend/sanjor.db
+!BACKEND/initial.db
 
 
 imagenes/
