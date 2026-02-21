@@ -1,28 +1,42 @@
 services:
+
   backend:
     build:
       context: ./BACKEND
     container_name: vicking_backend
+
     volumes:
-      - ./BACKEND/sql_app.db:/app/sql_app.db
-      - ./BACKEND/webinvita.db:/app/webinvita.db
-      # If you store uploaded images
+      # Base de datos persistente (SOLUCIÓN REAL)
+      - ./data:/data
+
+      # Si guardás imágenes
       - ./IMAGENES:/app/IMAGENES
+
     env_file:
       - .env
+
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:///./webinvita.db
-      - SQLALCHEMY_DATABASE_URI=sqlite:///./webinvita.db
+      - DATABASE_URL=sqlite+aiosqlite:////data/vicking.db
+      - SQLALCHEMY_DATABASE_URI=sqlite:////data/vicking.db
+
+    ports:
+      - "8000:8000"
+
     restart: always
 
   frontend:
     build:
       context: ./frontend
       args:
+        # el frontend llama al backend por nginx proxy
         - VITE_API_URL=/api/v1
+
     container_name: vicking_frontend
+
     ports:
-      - "80:80"
+      - "5173:80"
+
     depends_on:
       - backend
+
     restart: always
